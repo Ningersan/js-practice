@@ -33,7 +33,7 @@
             left: 46%;
         }
 
-        .control > span {
+        .control > li {
             display: inline-block;
             float: left;
             margin-left: 10px;
@@ -79,100 +79,15 @@
 <body>
 <div class="container" >
     <div class="img-list" style="left: 0%">
-        <img src="1.jpg">
-        <img src="2.jpg">
-        <img src="3.jpg">
-        <img src="4.jpg">
-        <img src="5.jpg">
-    </div>
-    <div class="control">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
+        <img src="img/1.jpg">
+        <img src="img/2.jpg">
+        <img src="img/3.jpg">
+        <img src="img/4.jpg">
+        <img src="img/5.jpg">
     </div>
     <button id="to-left" type="button" onclick="switchEvent(100)"><</button>
     <button id="to-right" type="button" onclick="switchEvent(-100)">></button>
 </div>
-<script type="text/javascript">
-function $(ele) {
-    return document.querySelector(ele);
-}
-
-function $a(ele) {
-    return document.querySelectorAll(ele);
-}
-
-//设置循环变量
-var timer;
-
-//设置图片偏移量
-function switchEvent(offset) {
-    var currtOffset =  parseInt($(".img-list").style.left) + offset;
-    //根据图像处于list最左端和最右端来重新计算偏移量
-    if (currtOffset > 0) {
-        currtOffset = -400;
-    }
-    if (currtOffset < -400) {
-        currtOffset = 0;
-    }
-    renderBtnColor(currtOffset);
-    //move
-    $(".img-list").style.left = currtOffset + "%";
-}
-
-//循环切换轮播图
-function play() {
-    timer = setInterval(function() {
-        switchEvent(-100)
-    }, 5000);
-}
-
-//暂停轮播图播放
-function stop() {
-    clearInterval(timer);
-}
-
-//渲染当前轮播按钮
-function renderBtnColor(offset) {
-    //重置按钮颜色
-    for (var i = 0, len = deliverBtns.length; i < len; i++) {
-        if (deliverBtns[i].className == "active") {
-            deliverBtns[i].className = "";
-        }
-    }
-
-    var index = -offset/100;
-    deliverBtns[index].className = "active"
-}
-
-//绑定事件
-var deliverBtns = $a("span");
-for (var i = 0, len = deliverBtns.length; i < len; i++) {
-    addEvent(deliverBtns[i], "click", (function(i) {
-        return function() {
-            var offset = -(i * 100);
-            $(".img-list").style.left = offset + "%";
-            renderBtnColor(offset);
-        }
-    })(i))
-}
-addEvent($(".img-list"), "mouseover", stop);
-addEvent($(".img-list"), "mouseout", play);
-
-//事件绑定函数，兼容浏览器差异
-function addEvent(element, event, listener) {
-    if (element.addEventListener) {
-        element.addEventListener(event, listener, false);
-    }
-    else if (element.attachEvent) {
-        element.attachEvent("on" + event, listener);
-    }
-    else {
-        element["on" + event] = listener;
-    }
-}
-</script>
+<script type="text/javascript" src="js/banner.js"></script>
 </body>
 </html>
