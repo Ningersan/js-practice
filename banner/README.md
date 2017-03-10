@@ -1,1 +1,0 @@
-carousel demo: https://htmlpreview.github.io/?https://github.com/Ningersan/js-practice/blob/master/banner/banner.html
