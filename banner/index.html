@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>轮播图</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            overflow: hidden;
+        }
+
+        .img-list {
+            position: relative;
+            width: 500%;
+            height: 600px;
+            -webkit-transition: left 0.6s cubic-bezier(0.26, 0.86, 0.44, 0.985);
+            -moz-transition: left 0.6s cubic-bezier(0.26, 0.86, 0.44, 0.985);
+            transition: left 0.6 cubic-bezier(0.26, 0.86, 0.44, 0.985);
+        }
+
+        img {
+            float: left;
+            width: 20%;
+            height: 600px;
+        }
+        
+        .control {
+            position: absolute;
+            top: 550px;
+            left: 46%;
+        }
+
+        .control > li {
+            display: inline-block;
+            float: left;
+            margin-left: 10px;
+            width: 10px;
+            height: 10px;
+            opacity: 0.4;
+            cursor: pointer;
+            border-radius: 50%;
+            background-color: #000;
+        }
+
+        button {
+            position: absolute;
+            width: 50px;
+            height: 100px;
+            opacity: 0.1;
+            font-size: 24px;
+            color: #1ab11d;
+            border: 0;
+            cursor: pointer;
+            background-color: #000;
+        }
+
+        button:hover {
+            opacity: 0.5;
+        }
+
+        #to-left {
+            top: 240px;
+            left: 10px;
+        }
+
+        #to-right {
+            top: 240px;
+            right: 10px;
+        }
+
+        .control .active {
+            background-color: #1ab11d;
+        }
+    </style>
+</head>
+<body>
+<div class="container" >
+    <div class="img-list" style="left: 0%">
+        <img src="img/1.jpg">
+        <img src="img/2.jpg">
+        <img src="img/3.jpg">
+        <img src="img/4.jpg">
+        <img src="img/5.jpg">
+    </div>
+    <button id="to-left" type="button" onclick="switchEvent(100)"><</button>
+    <button id="to-right" type="button" onclick="switchEvent(-100)">></button>
+</div>
+<script type="text/javascript" src="js/banner.js"></script>
+</body>
+</html>
