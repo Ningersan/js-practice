@@ -1,12 +1,14 @@
 (function () {
     var Template = function(config) {
-        this.$el = document.querySelector(config.el)
         this.data = config.data
+        this.$el = document.querySelector(config.el)
         this.init()
     }
 
     Template.prototype.init = function() {
-        this.compile(this.$el, this.data)
+        var fragment = addTofragment(this.$el)
+        this.compile(fragment, this.data)
+        this.$el.appendChild(fragment)
     }
 
     Template.prototype.compile = function(node, scope) {
@@ -27,8 +29,9 @@
     }
 
     Template.prototype.compileElementNode = function(node, scope) {
-        // attributes 是nodeMap类型，可能会动态添加属性所以要先转换为数组
         var self = this
+
+        // attributes 是nodeMap类型，可能会动态添加属性所以要先转换为数组
         var attrs = Array.prototype.slice.call(node.attributes)
 
         for (var key in attrs) {
@@ -89,15 +92,20 @@
 
     Template.prototype.forHandle = function(node, str, scope) {
         var self = this
-        var res = str.split('of')
+        var splits = str.split('of')
+
+        // 记录v-for中的key值
+        var key = splits[0].match(/let (.+?)$/)[1].trim()
         var parent = node.parentNode
         var fragment = document.createDocumentFragment()
 
-        getValue(res[1], scope).forEach(function (item) {
-            var temp = { item: item }
+        getValue(splits[1], scope).forEach(function(item) {
+            var newScope = {}
             var clone = node.cloneNode(true)
 
-            self.compile(clone, temp)
+            newScope[key] = item
+            clone.removeAttribute('v-for')
+            self.compile(clone, newScope)
             fragment.appendChild(clone)
         })
 
@@ -111,6 +119,17 @@
                 return eval(str)
             }
         }
+    }
+
+    function addTofragment(node) {
+        var fragment = document.createDocumentFragment()
+        for (var i = 0, len = node.children.length; i < len; i++) {
+            var child = node.children[i]
+            if (child.nodeType === 1) {
+                fragment.appendChild(child)
+            }
+        }
+        return fragment
     }
 
     // function getAllFirstChild(node) {
