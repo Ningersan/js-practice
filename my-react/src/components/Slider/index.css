@@ -14,3 +14,25 @@
     height: 100%;
     float: left;
 }
+
+#slider button {
+    position: absolute;
+    width: 50px;
+    height: 100px;
+    border: 0;
+    color: #1ab11d;
+    cursor: pointer;
+    outline: none;
+    /* opacity: 0.7; */
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.to-left {
+    top: 40%;
+    left: 0;
+}
+
+.to-right {
+    top: 40%;
+    right: 0;
+}
