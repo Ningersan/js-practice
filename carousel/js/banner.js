@@ -79,7 +79,8 @@ Switchable.prototype = {
             }
         }
         //根据偏移量判断按钮索引
-        var index = -offset/100;
+        var index = -off
+        set/100;
         deliverBtns[index].className = "active"
     },
 

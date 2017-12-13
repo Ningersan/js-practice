@@ -12,7 +12,7 @@ class ToDoList extends Component {
         this._handleDel = this._handleDel.bind(this);
         this.state = {
             todolist: []
-        }
+        };
     }
     _handleChange(rows) {
         this.setState({ todolist: rows });

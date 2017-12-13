@@ -1,58 +1,99 @@
 import React, { Component } from 'react';
-// import styles from './index.scss'
-import './index.css'
+import PropTypes from 'prop-types';
+import DotList from './DotList';
+import './index.css';
 
 class Slider extends Component {
+    static defaultProps = {
+        speed: 3000,
+        autoPlay: true,
+        haveDots: true,
+    }
+
+    static propTypes = {
+        speed: PropTypes.number.isRequired,
+        autoPlay: PropTypes.bool.isRequired,
+        haveDots: PropTypes.bool.isRequired,
+    }
+
     constructor() {
-        super()
+        super();
         this.state = {
             offset: 0,
-        }
-        this.handleClick = this.handleClick.bind(this)
+        };
+        this.handleClick = this.handleClick.bind(this);
     }
 
     tick(offset) {
-        this.setState((prevState) => ({
-            offset: prevState.offset + offset
-        }))
+        this.setState({
+            offset,
+        })
     }
 
-    slide() {
-        const { offset } = this.state
-        if (offset <= 0 && offset > -400) {
-            this.tick(-100)
-        } else if (offset <= -400) {
-            this.tick(400)
-        } else {
-            this.tick(-400)
+    slide(offset) {
+        const curOffset = this.state.offset;
+        let nowOffset = curOffset + offset;
+        const limit = (this.props.children.length - 1) * 100;
+
+        if (nowOffset > 0) {
+            nowOffset = -limit;
+        } else if (nowOffset < -limit) {
+            nowOffset = 0;
         }
+
+        this.tick(nowOffset);
     }
 
-    handleClick(e) {
-        var offset = {'to-left': 100, 'to-right': -100}
-        this.tick(offset[e.target.className])
+    getDotClassName(index) {
+        const { offset } = this.state;
+        return index === -(offset / 100) ? "dot active" : "dot";
+    }
+
+    handleClick(offset) {
+        return function(e) {
+            const strategies = {
+                'li': this.tick, 
+                'button': this.slide
+            };
+            const nodeName = e.target.nodeName.toLowerCase();
+            strategies[nodeName].call(this, offset);
+        }.bind(this);
     }
 
     componentDidMount() {
-        this.timer = setInterval(() => this.slide(), 2000)
+        if (this.props.autoPlay) {
+            this.timer = setInterval(() => this.slide(-100), this.props.speed);
+        }
     }
 
     componentWillUnmount() {
-        clearInterval(this.timer)
+        if (this.props.autoPlay) {
+            clearInterval(this.timer);
+        }
     }
 
     render() {
-        var listStyle = { left: `${this.state.offset}%` };
+        const { imgData } = this.props;
+        const listStyle = { left: `${this.state.offset}%` };
+
         return (
             <div id="slider">
                 <div className="img-list" style={listStyle}>
-                    {this.props.children}
+                    {React.Children.map(this.props.children, child => child)}
                 </div>
-                <button className='to-left' onClick={this.handleClick}></button>
-                <button className='to-right' onClick={this.handleClick}></button>
+                {
+                    this.props.haveDots &&
+                    <DotList
+                    offset={this.state.offset}
+                    length={this.props.children.length}
+                    handleClick={this.handleClick}
+                    />
+                }
+                <button className="to-left" onClick={this.handleClick(100)} />
+                <button className="to-right" onClick={this.handleClick(-100)} />
             </div>
         )
     }
 }
 
-export default Slider
+export default Slider;

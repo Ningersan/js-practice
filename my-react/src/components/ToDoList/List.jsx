@@ -1,5 +1,5 @@
-import React, { Component, PropTypes } from 'react';
-// import PropTypes from 'props-types';
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 function List(props) {
     const { todos, handleDel } = props;
@@ -21,7 +21,7 @@ function List(props) {
     )
 }
 
-List.PropTypes = {
+List.propTypes = {
     todos: PropTypes.array.isRequired,
     handleDel: PropTypes.func.isRequired,
 }
