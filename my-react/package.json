@@ -29,6 +29,7 @@
   },
   "homepage": "http://shgit/intern_training/0.2.0_my-react#readme",
   "dependencies": {
+    "classnames": "^2.2.5",
     "history": "^4.4.1",
     "react": "^15.3.2",
     "react-dom": "^15.3.2",

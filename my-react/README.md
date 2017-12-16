@@ -70,3 +70,13 @@ $ npm run build
 - [x] [Less](https://github.com/less/less.js)
 - [x] [Sass](https://github.com/sass/node-sass)
 - [x] [Eslint](https://github.com/eslint/eslint)
+
+___
+
+| ITEM | SCORE |
+| :--- | :---- |
+| Complete | 5 |
+| Code Style | 1 |
+| Time Limit | 0 |
+| Bravo Code | 1 |
+| Total | 7 |
