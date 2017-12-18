@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 class DotList extends Component {
     static propTypes = {
-        offset: PropTypes.number.isRequired,
+        current: PropTypes.number.isRequired,
         length: PropTypes.number.isRequired,
         handleClick: PropTypes.func.isRequired,
     }
@@ -13,9 +13,9 @@ class DotList extends Component {
     }
 
     render() {
-        const { length, offset, handleClick } = this.props;
+        const { length, current, handleClick } = this.props;
         const getDotClasses = function(index) {
-            return index === -(offset / 100) ? "dot active" : "dot";
+            return index === current ? "dot active" : "dot";
         }
 
         return (
@@ -25,7 +25,7 @@ class DotList extends Component {
                         return  <li
                                   className={getDotClasses(index)} 
                                   key={index}
-                                  onClick={handleClick(-index * 100)}
+                                  onClick={handleClick(index)}
                                 />
                     })
                 }

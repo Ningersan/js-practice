@@ -35,11 +35,11 @@ class App extends Component {
       <div className="container">
         {/* <ToDoList /> */}
         <Slider
-          speed={2000}
-          autoPlay={true}
-          allowPause={true}
-          allowTouch={true}
-          haveDots={true}
+          // speed={2000}
+          // autoPlay={true}
+          // allowPause={true}
+          // allowTouch={true}
+          // haveDots={true}
         />
       </div>
     );
