@@ -8,38 +8,16 @@ class App extends Component {
   }
 
   render() {
-    // const imgData = [
-    //   {
-    //     src: '../../static/img/coco-1.jpg',
-    //     alt: 'coco',
-    //   },
-    //   {
-    //     src: '../../static/img/coco-2.jpg',
-    //     alt: 'coco',
-    //   },
-    //   {
-    //     src: '../../static/img/coco-3.jpg',
-    //     alt: 'coco',
-    //   },
-    //   {
-    //     src: '../../static/img/coco-4.jpg',
-    //     alt: 'coco',
-    //   },
-    //   {
-    //     src: '../../static/img/coco-5.jpg',
-    //     alt: 'coco',
-    //   },
-    // ];
-
     return (
       <div className="container">
         {/* <ToDoList /> */}
         <Slider
-          // speed={2000}
-          // autoPlay={true}
-          // allowPause={true}
-          // allowTouch={true}
-          // haveDots={true}
+          speed={2000}
+          autoPlay={true}
+          allowPause={true}
+          allowTouch={true}
+          haveDots={true}
+          haveButton={true}
         />
       </div>
     );

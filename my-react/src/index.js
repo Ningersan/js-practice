@@ -1,14 +1,26 @@
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunkMiddleware from 'redux-thunk';
+import createLogger from 'redux-logger';
 import routes from './routes';
 import reducers from './infrastructure/reducers'
+import { fetchData } from './infrastructure/actions/'
 
+const url = 'http://10.16.164.34:8088/api/assistance/home/banner'
 const root = document.getElementById('app');
 
+const loggerMiddleware = createLogger();
+
 // 第一个参数是一个合并的reducers，第二个参数是一个initState
-let store = createStore(reducers)
+let store = createStore(reducers, 
+  applyMiddleware(
+    thunkMiddleware,
+    loggerMiddleware,
+  ))
+
+store.dispatch(fetchData(url));
 
 console.log(store.getState());
 

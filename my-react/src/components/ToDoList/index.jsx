@@ -4,7 +4,6 @@ import TypeNew from './component/typeNew';
 import { connect } from 'react-redux';
 import { addTodo, delTodo } from '../../infrastructure/actions/';
 
-
 class ToDoList extends Component {
     constructor() {
         super();

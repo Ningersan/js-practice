@@ -1,30 +1,33 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import DotList from './DotList';
+import Button from './Button';
 import './index.css';
 
 class Slider extends Component {
     static defaultProps = {
         speed: 3000,
-        autoPlay: false,
-        allowPause: false,
-        allowTouch: false,
+        autoPlay: true,
+        allowPause: true,
+        allowTouch: true,
         haveDots: true,
+        haveButtons: true,
     }
 
-    // static propTypes = {
-    //     imgData: PropTypes.array,
-    //     speed: PropTypes.number.isRequired,
-    //     autoPlay: PropTypes.bool.isRequired,
-    //     allowPause: PropTypes.bool.isRequired,
-    //     haveDots: PropTypes.bool.isRequired,
-    // }
+    static propTypes = {
+        imgData: PropTypes.array.isRequired,
+        speed: PropTypes.number.isRequired,
+        autoPlay: PropTypes.bool.isRequired,
+        allowPause: PropTypes.bool.isRequired,
+        haveDots: PropTypes.bool.isRequired,
+        haveButtons: PropTypes.bool.isRequired,
+    }
 
     constructor() {
         super();
         this.state = {
-            // offset: 0,
             prev: 0,
             current: 0,
             direction: 'stop',
@@ -37,39 +40,25 @@ class Slider extends Component {
         this.handleMouseOut = this.handleMouseOut.bind(this);
     }
 
-    tick(next) {
+    moveTo(next) {
         const { current } = this.state;
+        const length = this.props.imgData.length;
         let direction = next > current ? 'forward' : 'backward';
-        if (next >= this.props.imgData.length ) {
+
+        if (next >= length) {
             direction = 'forward';
+            next = 0;
+        } else if (next < 0) {
+            direction = 'backward';
+            next = length - 1;
         }
-        this.setState({prev: current, current: next, direction})
-        // this.setState({
-        //     offset,
-        // })
+
+        this.setState({ prev: current, current: next, direction });
     }
 
-    slide(next) {
+    slide(offset) {
         const { current } = this.state;
-        const limit = this.props.imgData.length
-        let pos = current + next;
-        if (pos >= limit) {
-            pos = 0;
-        } else if (pos < 0) {
-            pos = limit;
-        }
-        this.tick(pos);
-        // const curOffset = this.state.offset;
-        // let nowOffset = curOffset + offset;
-        // const limit = (this.props.imgData.length - 1) * 100;
-
-        // if (nowOffset > 0) {
-        //     nowOffset = -limit;
-        // } else if (nowOffset < -limit) {
-        //     nowOffset = 0;
-        // }
-
-        // this.tick(nowOffset);
+        this.moveTo(current + offset);
     }
 
     autoPlay() {
@@ -93,14 +82,9 @@ class Slider extends Component {
         }
     }
 
-    getDotClassName(index) {
-        // const { offset } = this.state;
-        // return index === -(offset / 100) ? "dot active" : "dot";
-    }
-
     handleClick(offset) {
-        return function(e) {
-            const strategies = { 'li': this.tick, 'button': this.slide };
+        return function (e) {
+            const strategies = { 'li': this.moveTo, 'button': this.slide };
             const nodeName = e.target.nodeName.toLowerCase();
             strategies[nodeName].call(this, offset);
         }.bind(this);
@@ -109,7 +93,7 @@ class Slider extends Component {
     handleMouseUp() {
         if (this.props.allowTouch) {
             if (this.readyTouchSlide) {
-                const offset = { 'left': -100, 'right': 100, }[this.touchDirection];
+                const offset = { 'left': 1, 'right': -1, }[this.touchDirection];
                 this.slide(offset);
             }
             this.readyTouchSlide = false;
@@ -151,46 +135,74 @@ class Slider extends Component {
     }
 
     componentWillUnmount() {
-        // this.pause();
+        this.pause();
     }
 
     render() {
+        const { isFetch, imgData, haveDots, haveButtons } = this.props;
+        const { direction } = this.state;
+        const isEmpty = imgData.length === 0;
+        const className = classnames({
+            'slider-screen': true,
+            [`slider-${direction}`]: direction !== 'stop',
+        })
+        console.log();
+        return (
+            <div>
+                {isEmpty 
+                    ? (isFetch ? <h2>Loading...</h2> : <h2>Empty</h2>)
+                    : <div id="slider">
+                        <div
+                            className={className}
+                            onMouseUp={this.handleMouseUp}
+                            onMouseDown={this.handleMouseDown}
+                            onMouseOver={this.handleMouseOver}
+                            onMouseMove={this.handleMouseMove}
+                            onMouseOut={this.handleMouseOut}
+                        >
+                            {this.renderImgs()}
+                        </div>
+                        {haveDots && this.renderDots()}
+                        {haveButtons && this.renderButtons()}
+                    </div>
+                }
+            </div>
+        )
+    }
+
+    renderImgs() {
         const { imgData } = this.props;
-        const className = `slider-screen slider-${this.state.direction}`;
-        // const listStyle = { left: `${this.state.offset}%` };
 
         return (
-            <div id="slider">
-                <div
-                  className={className}
-                //   style={listStyle}
-                  onMouseUp={this.handleMouseUp}
-                  onMouseDown={this.handleMouseDown}
-                  onMouseOver={this.handleMouseOver}
-                  onMouseMove={this.handleMouseMove}
-                  onMouseOut={this.handleMouseOut}
-                >
-                    {
-                        imgData.map((img, index) =>
-                        <img
-                          key={index}
-                          className={this.getItemClassName(index)}
-                          src={img.src}
-                          alt={img.alt}
-                        />)
-                    }
-                </div>
-                {
-                    this.props.haveDots &&
-                    <DotList
-                        // offset={this.state.offset}
-                        current={this.state.current}
-                        length={imgData.length}
-                        handleClick={this.handleClick}
-                    />
-                }
-                <button className="to-left" onClick={this.handleClick(-1)} />
-                <button className="to-right" onClick={this.handleClick(1)} />
+            imgData.map((img, index) =>
+                <img
+                    key={index}
+                    className={this.getItemClassName(index)}
+                    src={img.src}
+                    alt={img.alt}
+                />
+            )
+        )
+    }
+
+    renderDots() {
+        const { imgData } = this.props;
+        const { current } = this.state;
+
+        return (
+            <DotList
+                current={current}
+                length={imgData.length}
+                handleClick={this.handleClick}
+            />
+        )
+    }
+
+    renderButtons() {
+        return (
+            <div className="slider-toggle-button">
+                <Button type={'button'} className={'to-left'} handleClick={this.handleClick(-1)} />
+                <Button type={'button'} className={'to-right'} handleClick={this.handleClick(1)} />
             </div>
         )
     }
@@ -202,6 +214,7 @@ export default connect(
 
 function mapStateToProps(state) {
     return {
+        isFetch: state.sliderReducer.isFetch,
         imgData: state.sliderReducer.imgData,
     }
 }

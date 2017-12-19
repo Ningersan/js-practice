@@ -12,22 +12,24 @@ class DotList extends Component {
         super();
     }
 
+    getDotClasses(index) {
+        const { current } = this.props;
+        return index === current ? "slider-dot active" : "slider-dot";
+    }
+
     render() {
-        const { length, current, handleClick } = this.props;
-        const getDotClasses = function(index) {
-            return index === current ? "dot active" : "dot";
-        }
+        const { length, handleClick } = this.props;
 
         return (
-            <ul className="dots">
+            <ul className="slider-dots">
                 {
-                    Array.from({length}).map(function (child, index) {
-                        return  <li
-                                  className={getDotClasses(index)} 
-                                  key={index}
-                                  onClick={handleClick(index)}
-                                />
-                    })
+                    Array.from({length}).map((child, index) =>
+                        <li
+                          key={index}
+                          className={this.getDotClasses(index)}
+                          onClick={handleClick(index)}
+                        />
+                    )
                 }
             </ul>
         );
