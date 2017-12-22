@@ -17,13 +17,15 @@ class Button extends Component {
     }
 
     render() {
-        const { type, className, handleClick } = this.props;
-        // const next = {'to-left': -1, 'to-right': 1}[className];
-        return <button
-            type={type}
-            className={className}
-            onClick={handleClick}
-        />
+        const { type, className, handleClick, children } = this.props;
+
+        return (
+            <button
+                type={type}
+                className={className}
+                onClick={handleClick}
+            >{children}</button>
+        )
     }
 }
 

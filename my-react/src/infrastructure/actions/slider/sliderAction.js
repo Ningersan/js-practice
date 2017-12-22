@@ -1,24 +1,41 @@
 export const FETCH_DATA = 'FETCH_DATA';
-export const REQUEST_DATA = 'REQUEST_DATA';
+export const FETCH_START = 'FETCH_START';
+export const FETCH_FAILURE = 'FETCH_FAILURE';
 export const RECEIVE_DATA = 'RECEIVE_DATA';
 
-export const fetchData = url => dispatch => {
-    return fetch(url, {method: 'GET', mode: 'cors'})
-    .then(response => console.log(response))
-        // .then(response => response.json())
-        // .then(json => dispatch(receiveData(json)))
-}
+// export const fetchData = url => dispatch => {
+//     dispatch(fetchStart())
+//     return fetch(url)
+//     .then(response => response.json())
+//     .then(json => dispatch(receiveData(json)))
+//     .catch(e => dispatch(fetchFailure('fetch failure')))
+// }
 
-export function requestData(url) {
-    return {
-        type: REQUEST_DATA,
-        url,
-    }
-}
+export const fetchStart = () => ({
+    type: FETCH_START,
+})
 
-export function receiveData(data) {
-    return {
-        type: RECEIVE_DATA,
-        data,
+export const fetchFailure = error => ({
+    type: FETCH_FAILURE,
+    error,
+})
+
+export const receiveData = data => ({
+    type: RECEIVE_DATA,
+    data,
+})
+
+export const fetchData = url => async dispatch => {
+    dispatch(fetchStart())
+    try {
+        const response = await fetch(url);
+        if (response.status === 200) {
+            const data = await response.json();
+            dispatch(receiveData(data));
+        } else {
+            throw new Error('fetch failure');
+        }
+    } catch (e) {
+        dispatch(fetchFailure('fetch failure'))
     }
 }

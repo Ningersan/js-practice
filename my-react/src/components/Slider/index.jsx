@@ -8,21 +8,24 @@ import './index.css';
 
 class Slider extends Component {
     static defaultProps = {
+        url: 'api/assistance/home/banner',
         speed: 3000,
-        autoPlay: true,
+        haveDots: true,
+        haveArrows: true,
+        allowAutoPlay: true,
         allowPause: true,
         allowTouch: true,
-        haveDots: true,
-        haveButtons: true,
     }
 
     static propTypes = {
-        imgData: PropTypes.array.isRequired,
+        url: PropTypes.string.isRequired,
+        imgData: PropTypes.arrayOf(PropTypes.string.isRequired),
         speed: PropTypes.number.isRequired,
-        autoPlay: PropTypes.bool.isRequired,
-        allowPause: PropTypes.bool.isRequired,
         haveDots: PropTypes.bool.isRequired,
-        haveButtons: PropTypes.bool.isRequired,
+        haveArrows: PropTypes.bool.isRequired,
+        allowAutoPlay: PropTypes.bool.isRequired,
+        allowPause: PropTypes.bool.isRequired,
+        allowTouch: PropTypes.bool.isRequired,
     }
 
     constructor() {
@@ -40,45 +43,17 @@ class Slider extends Component {
         this.handleMouseOut = this.handleMouseOut.bind(this);
     }
 
-    moveTo(next) {
-        const { current } = this.state;
-        const length = this.props.imgData.length;
-        let direction = next > current ? 'forward' : 'backward';
+    componentDidMount() {
+        const { url, fetchData, allowAutoPlay } = this.props
 
-        if (next >= length) {
-            direction = 'forward';
-            next = 0;
-        } else if (next < 0) {
-            direction = 'backward';
-            next = length - 1;
-        }
-
-        this.setState({ prev: current, current: next, direction });
-    }
-
-    slide(offset) {
-        const { current } = this.state;
-        this.moveTo(current + offset);
-    }
-
-    autoPlay() {
-        if (this.props.autoPlay) {
-            this.timer = setInterval(() => this.slide(1), this.props.speed);
+        if (allowAutoPlay) {
+            this.autoPlay();
         }
     }
 
-    pause() {
-        if (this.props.autoPlay) {
-            clearInterval(this.timer);
-        }
-    }
-
-    getItemClassName(index) {
-        const { current, prev } = this.state;
-        if (index === current) {
-            return 'slider-item-current';
-        } else if (index === prev && prev !== current) {
-            return 'slider-item-prev';
+    componentWillUnmount() {
+        if (this.props.allowAutoPlay) {
+            this.pause();
         }
     }
 
@@ -125,47 +100,57 @@ class Slider extends Component {
     }
 
     handleMouseOut() {
-        if (this.props.allowPause && this.props.autoPlay) {
+        if (this.props.allowPause && this.props.allowAutoPlay) {
             this.autoPlay();
         }
     }
 
-    componentDidMount() {
-        this.autoPlay();
+    getItemClassName(index) {
+        const { current, prev } = this.state;
+        if (index === current) {
+            return 'slider-item-current';
+        } else if (index === prev && prev !== current) {
+            return 'slider-item-prev';
+        }
     }
 
-    componentWillUnmount() {
-        this.pause();
+    moveTo(next) {
+        const { current } = this.state;
+        const length = this.props.imgData.length;
+        let direction = next > current ? 'forward' : 'backward';
+
+        if (next >= length) {
+            direction = 'forward';
+            next = 0;
+        } else if (next < 0) {
+            direction = 'backward';
+            next = length - 1;
+        }
+
+        this.setState({ prev: current, current: next, direction });
     }
 
-    render() {
-        const { isFetch, imgData, haveDots, haveButtons } = this.props;
-        const { direction } = this.state;
-        const isEmpty = imgData.length === 0;
-        const className = classnames({
-            'slider-screen': true,
-            [`slider-${direction}`]: direction !== 'stop',
-        })
-        console.log();
+    slide(offset) {
+        const { current } = this.state;
+        this.moveTo(current + offset);
+    }
+
+    autoPlay() {
+        this.timer = setInterval(() => this.slide(1), this.props.speed);
+    }
+
+    pause() {
+        clearInterval(this.timer);
+    }
+
+    renderLoading() {
         return (
-            <div>
-                {isEmpty 
-                    ? (isFetch ? <h2>Loading...</h2> : <h2>Empty</h2>)
-                    : <div id="slider">
-                        <div
-                            className={className}
-                            onMouseUp={this.handleMouseUp}
-                            onMouseDown={this.handleMouseDown}
-                            onMouseOver={this.handleMouseOver}
-                            onMouseMove={this.handleMouseMove}
-                            onMouseOut={this.handleMouseOut}
-                        >
-                            {this.renderImgs()}
-                        </div>
-                        {haveDots && this.renderDots()}
-                        {haveButtons && this.renderButtons()}
-                    </div>
-                }
+            <div className="slider-loading">
+                <div className="sk-three-bounce">
+                    <div className="sk-child sk-bounce1" />
+                    <div className="sk-child sk-bounce2" />
+                    <div className="sk-child sk-bounce3" />
+                </div>
             </div>
         )
     }
@@ -174,14 +159,14 @@ class Slider extends Component {
         const { imgData } = this.props;
 
         return (
-            imgData.map((img, index) =>
+            imgData.map((img, index) => (
                 <img
                     key={index}
                     className={this.getItemClassName(index)}
-                    src={img.src}
+                    src={img.src || img}
                     alt={img.alt}
                 />
-            )
+            ))
         )
     }
 
@@ -200,21 +185,52 @@ class Slider extends Component {
 
     renderButtons() {
         return (
-            <div className="slider-toggle-button">
-                <Button type={'button'} className={'to-left'} handleClick={this.handleClick(-1)} />
-                <Button type={'button'} className={'to-right'} handleClick={this.handleClick(1)} />
+            <div className="slider-arrows-wrap">
+                <Button type={'button'} className={'slider-to-left'} handleClick={this.handleClick(-1)} >&lt;</Button>
+                <Button type={'button'} className={'slider-to-right'} handleClick={this.handleClick(1)} >&gt;</Button>
+            </div>
+        )
+    }
+
+    render() {
+        const { isFetching, imgData, haveDots, haveArrows } = this.props;
+        const { direction } = this.state;
+        const isEmpty = imgData.length === 0;
+        const className = classnames({
+            'slider-screen': true,
+            [`slider-${direction}`]: direction !== 'stop',
+        })
+
+        return (
+            <div className="slider-wrap">
+                {isEmpty
+                    ? (isFetching ? this.renderLoading() : <h2>{this.props.message}</h2>)
+                    : <div className="slider">
+                        <div
+                            className={className}
+                            onMouseUp={this.handleMouseUp}
+                            onMouseDown={this.handleMouseDown}
+                            onMouseOver={this.handleMouseOver}
+                            onMouseMove={this.handleMouseMove}
+                            onMouseOut={this.handleMouseOut}
+                        >
+                            {this.renderImgs()}
+                        </div>
+                        {haveDots && this.renderDots()}
+                        {haveArrows && this.renderButtons()}
+                    </div>
+                }
             </div>
         )
     }
 }
 
+const mapStateToProps = state => ({
+    isFetching: state.sliderReducer.isFetching,
+    message: state.sliderReducer.message,
+    imgData: state.sliderReducer.imgData,
+})
+
 export default connect(
     mapStateToProps,
 )(Slider);
-
-function mapStateToProps(state) {
-    return {
-        isFetch: state.sliderReducer.isFetch,
-        imgData: state.sliderReducer.imgData,
-    }
-}

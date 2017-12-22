@@ -21,15 +21,15 @@ class DotList extends Component {
         const { length, handleClick } = this.props;
 
         return (
-            <ul className="slider-dots">
+            <ul className="slider-dots-wrap">
                 {
-                    Array.from({length}).map((child, index) =>
+                    Array.from({length}).map((child, index) => (
                         <li
-                          key={index}
-                          className={this.getDotClasses(index)}
-                          onClick={handleClick(index)}
+                            key={index}
+                            className={this.getDotClasses(index)}
+                            onClick={handleClick(index)}
                         />
-                    )
+                    ))
                 }
             </ul>
         );

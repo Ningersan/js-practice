@@ -1,39 +1,23 @@
-import { REQUEST_DATA, RECEIVE_DATA } from '../../actions/index'
+import { FETCH_FAILURE, RECEIVE_DATA, FETCH_START } from '../../actions/'
 
 const initState = {
     isFetching: false,
+    message: 'pedding',
     imgData: [],
-
-    // imgData: [
-    //     {
-    //         src: '../../static/img/coco-1.jpg',
-    //         alt: 'coco',
-    //     },
-    //     {
-    //         src: '../../static/img/coco-2.jpg',
-    //         alt: 'coco',
-    //     },
-    //     {
-    //         src: '../../static/img/coco-3.jpg',
-    //         alt: 'coco',
-    //     },
-    //     {
-    //         src: '../../static/img/coco-4.jpg',
-    //         alt: 'coco',
-    //     },
-    //     {
-    //         src: '../../static/img/coco-5.jpg',
-    //         alt: 'coco',
-    //     },
-    // ]
 }
 
 const sliderReducer = function(state=initState, action) {
     switch (action.type) {
-        case REQUEST_DATA:
+        case FETCH_START:
             return {
                 ...state,
                 isFetching: true,
+            }
+        case FETCH_FAILURE:
+            return {
+                ...state,
+                isFetching: false,
+                message: action.error,
             }
         case RECEIVE_DATA:
             return {

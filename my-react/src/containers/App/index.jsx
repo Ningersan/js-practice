@@ -13,11 +13,11 @@ class App extends Component {
         {/* <ToDoList /> */}
         <Slider
           speed={2000}
+          haveDots={true}
+          haveArrows={true}
           autoPlay={true}
           allowPause={true}
           allowTouch={true}
-          haveDots={true}
-          haveButton={true}
         />
       </div>
     );
